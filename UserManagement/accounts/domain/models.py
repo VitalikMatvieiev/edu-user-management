@@ -51,8 +51,6 @@ class UserProfile(AbstractBaseUser, PermissionsMixin):
     date_of_birth = models.DateField(null=True, blank=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
-    date_joined = models.DateTimeField(default=timezone.now)
-
     objects = CustomUserManager()
 
     USERNAME_FIELD = 'email'
