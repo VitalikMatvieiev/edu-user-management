@@ -1,5 +1,3 @@
-# accounts/repositories/implementations.py
-
 from .interfaces import IUserRepository, IInstructorRateRepository
 from ..domain.models import UserProfile, InstructorRate
 from django.core.exceptions import ObjectDoesNotExist
@@ -7,7 +5,8 @@ from django.db import IntegrityError
 
 
 class DjangoUserProfileRepository(IUserRepository):
-    def get_by_id(self, user_id):
+    
+    def get_user_id(self, user_id):
         try:
             return UserProfile.objects.get(id=user_id)
         except ObjectDoesNotExist:
@@ -53,7 +52,7 @@ class DjangoUserProfileRepository(IUserRepository):
         
  
 class DjangoInstructorRateRepository(IInstructorRateRepository):
-    def get_by_id(self, rate_id):
+    def get_rate_id(self, rate_id):
         try:
             return InstructorRate.objects.get(id=rate_id)
         except ObjectDoesNotExist:

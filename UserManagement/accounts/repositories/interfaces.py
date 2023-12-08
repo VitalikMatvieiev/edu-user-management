@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 
 class IUserRepository(ABC):
     @abstractmethod
-    def get_by_id(self, user_id):
+    def get_user_id(self, user_id):
         """Retrieve a User instance by its ID."""
         pass
 
@@ -25,7 +25,7 @@ class IUserRepository(ABC):
 
 class IInstructorRateRepository(ABC):
     @abstractmethod
-    def get_by_id(self, rate_id):
+    def get_rate_id(self, rate_id):
         """Retrieve an InstructorRate instance by its ID."""
         pass
 
