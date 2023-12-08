@@ -23,8 +23,8 @@ class DjangoUserProfileRepository(IUserRepository):
 
     def delete(self, user_id):
         UserProfile.objects.filter(id=user_id).delete()
-
-
+        
+ 
 class DjangoInstructorRateRepository(IInstructorRateRepository):
     def get_by_id(self, rate_id):
         try:

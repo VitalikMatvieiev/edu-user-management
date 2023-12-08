@@ -1,6 +1,8 @@
 from ..repositories.interfaces import IUserRepository, IInstructorRateRepository
 from ..repositories.implementations import DjangoUserProfileRepository, DjangoInstructorRateRepository
 
+# TODO: Need to add exceptions
+
 
 class UserProfileService:
     def __init__(self, user_repository: IUserRepository = None):
