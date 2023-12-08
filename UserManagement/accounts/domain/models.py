@@ -31,7 +31,7 @@ class CustomUserManager(BaseUserManager):
         """
         Creates and saves an admin user with the given email and password.
         """
-        extra_fields.setdefault('is_admin', True)
+        extra_fields.setdefault('is_staff', True)
     
         if extra_fields.get('is_admin') is not True:
             raise ValueError('Admin user must have is_admin=True.')
@@ -56,12 +56,9 @@ class UserProfile(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
     full_name = models.CharField(max_length=150, blank=True)
     date_of_birth = models.DateField(null=True, blank=True)
-    is_admin = models.BooleanField(default=False)
-    is_instructor = models.BooleanField(default=False)
-    
-    is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
-    
+    is_instructor = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
     objects = CustomUserManager()
 
     USERNAME_FIELD = 'email'
@@ -76,7 +73,7 @@ class InstructorRate(models.Model):
     user = models.ForeignKey('UserProfile', on_delete=models.PROTECT, related_name='ratings')
     rate = models.FloatField()
     review = models.TextField(null=True, blank=True)
-    rate_date = models.DateTimeField(default=timezone.now)
+    rate_date_created = models.DateTimeField(default=timezone.now)  # Timezone-aware datetime
 
     def __str__(self):
         user_full_name = self.user.full_name if self.user else "Unknown user"

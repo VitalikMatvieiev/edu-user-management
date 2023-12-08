@@ -32,26 +32,26 @@ class InstructorRateService:
     def __init__(self, instructor_rate_repository: IInstructorRateRepository = None):
         self.instructor_rate_repository = instructor_rate_repository or DjangoInstructorRateRepository()
 
-    def add_instructor_rating(self, **rate_data):
+    def add_instructor_rate(self, **rate_data):
         # Validate rate_data, perform any additional logic and create an instructor rate
         instructor_rate = self.instructor_rate_repository.create(**rate_data)
         return instructor_rate
 
-    def update_instructor_rating(self, rate_id, **rate_data):
+    def update_instructor_rate(self, rate_id, **rate_data):
         # Perform any necessary validation and business logic checks
         updated_instructor_rate = self.instructor_rate_repository.update(rate_id, **rate_data)
         return updated_instructor_rate
 
-    def delete_instructor_rating(self, rate_id):
+    def delete_instructor_rate(self, rate_id):
         # You can place additional checks here if needed before deletion
         self.instructor_rate_repository.delete(rate_id)
 
-    def get_instructor_rating(self, rate_id):
+    def get_instructor_rate(self, rate_id):
         # Additional logic can be placed here if you want to manipulate the data in any way
         instructor_rate = self.instructor_rate_repository.get_by_id(rate_id)
         return instructor_rate
 
-    def get_all_ratings_for_instructor(self, user_id):
+    def get_all_rate_for_instructor(self, user_id):
         # Fetch all ratings for a specific instructor
         all_ratings = self.instructor_rate_repository.get_all_for_user(user_id)
         return all_ratings
