@@ -24,7 +24,7 @@ class UserProfileService:
 
     def get_user_profile(self, user_id):
         # Additional logic can be placed here if you want to manipulate the data in any way
-        user_profile = self.user_repository.get_by_id(user_id)
+        user_profile = self.user_repository.get_user_id(user_id)
         return user_profile
 
 
@@ -48,7 +48,7 @@ class InstructorRateService:
 
     def get_instructor_rate(self, rate_id):
         # Additional logic can be placed here if you want to manipulate the data in any way
-        instructor_rate = self.instructor_rate_repository.get_by_id(rate_id)
+        instructor_rate = self.instructor_rate_repository.get_rate_id(rate_id)
         return instructor_rate
 
     def get_all_rate_for_instructor(self, user_id):
