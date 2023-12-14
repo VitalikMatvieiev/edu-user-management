@@ -5,8 +5,7 @@ from ..domain.models import UserProfile, InstructorRate
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
-        fields = ['id', 'identity_id', 'email', 'full_name', 'date_of_birth',
-                  'is_admin', 'is_instructor', 'is_active']
+        fields = ['id', 'identity_id', 'email', 'full_name', 'date_of_birth', 'is_active']
         extra_kwargs = {
             'identity_id': {'read_only': True},  # Make 'identity_id' read-only after creation
         }
