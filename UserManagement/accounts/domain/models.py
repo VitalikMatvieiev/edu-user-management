@@ -1,17 +1,12 @@
-from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
 from django.utils import timezone
 
 
 # User Model
-class UserProfile(AbstractBaseUser, PermissionsMixin):
-    identity_id = models.IntegerField(null=True, blank=True)  # Reference to the Identity service
+class UserProfile(models.Model):
+    identity_id = models.IntegerField(null=True, blank=True, unique=True)  # Reference to the Identity service
     full_name = models.CharField(max_length=150, blank=True)
     date_of_birth = models.DateField(null=True, blank=True)
-    is_active = models.BooleanField(default=True)
-
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['full_name', 'date_of_birth']  # Customize as needed
 
     def __str__(self):
         return self.full_name

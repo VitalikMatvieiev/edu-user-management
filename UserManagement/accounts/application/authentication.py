@@ -7,6 +7,7 @@ logger = logging.getLogger(__name__)
 
 
 def decode_jwt(token):
+
     try:
         decode_payload = jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=['HS256'])
         return decode_payload
