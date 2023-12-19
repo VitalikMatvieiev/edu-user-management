@@ -11,10 +11,8 @@ def jwt_authentication_middleware(get_response):
     def middleware(request):
         # This is a lazy evaluation of the request user which will only query the user once it is needed.
         auth_header = get_authorization_header(request).decode('utf-8')
-        print(auth_header)
         if auth_header.startswith('Bearer '):
             token = auth_header.split(' ')[1]
-            print(token)
             try:
                 payload = decode_jwt(token)
                 user = type('User', (), {'is_authenticated': True, 'is_active': True, 'claims': payload.get('claims', [])})
