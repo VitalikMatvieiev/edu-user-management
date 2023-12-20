@@ -1,5 +1,7 @@
 from django.db import models
 from django.utils import timezone
+from decimal import Decimal
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 
 # User Model
@@ -18,8 +20,17 @@ class UserProfile(models.Model):
 # InstructorRate Model
 class InstructorRate(models.Model):
     user = models.ForeignKey('UserProfile', on_delete=models.PROTECT, related_name='ratings')
-    rate = models.FloatField()
-    review = models.TextField(null=True, blank=True)
+    # rate = models.FloatField()
+    rate = models.DecimalField(
+        max_digits=3,
+        decimal_places=2,
+        validators=[
+            MinValueValidator(Decimal('0.00')),
+            MaxValueValidator(Decimal('5.00'))
+        ]
+    )
+
+    review = models.CharField(null=True, blank=True, max_length=1000)
     rate_date_created = models.DateTimeField(default=timezone.now)  # Timezone-aware datetime
     
     class Meta:

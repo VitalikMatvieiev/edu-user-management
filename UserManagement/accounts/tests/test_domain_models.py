@@ -2,9 +2,8 @@ from django.test import TestCase
 from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
 from ..domain.models import UserProfile, InstructorRate
-from django.utils import timezone
 from datetime import date, datetime
-from django.db import transaction
+from decimal import Decimal
 
 
 class UserProfileTestCase(TestCase):
@@ -41,10 +40,11 @@ class UserProfileTestCase(TestCase):
 class InstructorRateTestCase(TestCase):
     def setUp(self):
         self.user = UserProfile.objects.create(full_name="Jane Doe", date_of_birth="1992-02-02")
-        self.instructor_rate = InstructorRate.objects.create(user=self.user, rate=4.5, review="Great instructor")
+        self.instructor_rate = InstructorRate.objects.create(user=self.user, rate=Decimal('4.5'),
+                                                             review="Great instructor")
 
     def test_rate_creation(self):
-        self.assertEqual(self.instructor_rate.rate, 4.5)
+        self.assertEqual(self.instructor_rate.rate, Decimal('4.5'))
         self.assertEqual(self.instructor_rate.review, "Great instructor")
 
     def test_rate_str(self):
@@ -52,6 +52,19 @@ class InstructorRateTestCase(TestCase):
 
     def test_default_rate_date_created(self):
         self.assertIsInstance(self.instructor_rate.rate_date_created, datetime)
+
+    def test_rate_decimal_precision(self):
+        # This should raise ValidationError due to more than two decimal places
+        with self.assertRaises(ValidationError):
+            rate = InstructorRate.objects.create(user=self.user, rate=Decimal('4.556'), review="Excellent")
+            rate.full_clean()
+            rate.save()
+
+    def test_review_length_limit(self):
+        long_review = 'a' * 1001  # 1001 characters long
+        rate = InstructorRate(user=self.user, rate=Decimal('4.5'), review=long_review)
+        with self.assertRaises(ValidationError):
+            rate.full_clean()
 
  
 
