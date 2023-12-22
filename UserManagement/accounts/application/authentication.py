@@ -3,7 +3,7 @@ from django.conf import settings
 from .exceptions import DecodeTokenError, ExpiredTokenError
 import logging
 
-logger = logging.getLogger(__name__)
+# logger = logging.getLogger(__name__)
 
 
 def decode_jwt(token):
