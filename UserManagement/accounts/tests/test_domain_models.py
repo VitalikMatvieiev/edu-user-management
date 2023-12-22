@@ -10,20 +10,20 @@ class UserProfileTestCase(TestCase):
     def setUp(self):
         UserProfile.objects.create(identity_id=123, full_name="John Doe", date_of_birth="1990-01-01")
 
-    def test_user_creation(self):
+    def test_create_userProfile_createsValidUser_onValidData(self):
         user = UserProfile.objects.get(full_name="John Doe")
         self.assertEqual(user.full_name, "John Doe")
         self.assertEqual(user.date_of_birth, date(1990, 1, 1))
 
-    def test_user_str(self):
+    def test_str_returnsFullName_onUserProfileInstance(self):
         user = UserProfile.objects.get(full_name="John Doe")
         self.assertEqual(str(user), "John Doe")
 
-    def test_invalid_date_of_birth(self):
+    def test_create_userProfile_raisesValidationError_onInvalidDateOfBirth(self):
         with self.assertRaises(ValidationError):
             UserProfile.objects.create(full_name="Jane Doe", date_of_birth="invalid-date")
     
-    def test_identity_id_unique_constraint(self):
+    def test_create_userProfile_raisesIntegrityError_onDuplicateIdentityId(self):
         # This should raise IntegrityError because identity_id must be unique
         with self.assertRaises(IntegrityError):
             UserProfile.objects.create(
@@ -32,7 +32,7 @@ class UserProfileTestCase(TestCase):
                 date_of_birth="1995-05-15"
             )
 
-    def test_optional_date_of_birth(self):
+    def test_create_userProfile_createsUserWithoutDateOfBirth_onMissingDateOfBirth(self):
         user = UserProfile.objects.create(full_name="Jane Doe")
         self.assertIsNone(user.date_of_birth)
 
@@ -40,31 +40,40 @@ class UserProfileTestCase(TestCase):
 class InstructorRateTestCase(TestCase):
     def setUp(self):
         self.user = UserProfile.objects.create(full_name="Jane Doe", date_of_birth="1992-02-02")
-        self.instructor_rate = InstructorRate.objects.create(user=self.user, rate=Decimal('4.5'),
-                                                             review="Great instructor")
+        self.instructor_rate = InstructorRate.objects.create(user=self.user, rate=Decimal('4.5'), review="Great instructor")
 
-    def test_rate_creation(self):
+    def test_instructorRateCreation_WithValidData_CreatesSuccessfully(self):
         self.assertEqual(self.instructor_rate.rate, Decimal('4.5'))
         self.assertEqual(self.instructor_rate.review, "Great instructor")
 
-    def test_rate_str(self):
-        self.assertEqual(str(self.instructor_rate), "Jane Doe's Rating: 4.5")
+    def test_instructorRateStr_ReturnsFormattedString(self):
+        expected_string = "Jane Doe's Rating: 4.5"
+        self.assertEqual(str(self.instructor_rate), expected_string)
 
-    def test_default_rate_date_created(self):
+    def test_instructorRateCreation_SetsCurrentDateTime_OnRateDateCreated(self):
         self.assertIsInstance(self.instructor_rate.rate_date_created, datetime)
 
-    def test_rate_decimal_precision(self):
-        # This should raise ValidationError due to more than two decimal places
+    def test_instructorRateCreation_WithInvalidDecimalPrecision_RaisesValidationError(self):
         with self.assertRaises(ValidationError):
-            rate = InstructorRate.objects.create(user=self.user, rate=Decimal('4.556'), review="Excellent")
+            rate = InstructorRate(user=self.user, rate=Decimal('4.556'), review="Excellent")
             rate.full_clean()
-            rate.save()
 
-    def test_review_length_limit(self):
+    def test_instructorRateCreation_WithReviewExceedingLengthLimit_RaisesValidationError(self):
         long_review = 'a' * 1001  # 1001 characters long
         rate = InstructorRate(user=self.user, rate=Decimal('4.5'), review=long_review)
         with self.assertRaises(ValidationError):
             rate.full_clean()
+
+    def test_instructorRateCreation_WithRateBelowMinimum_RaisesValidationError(self):
+        with self.assertRaises(ValidationError):
+            rate = InstructorRate(user=self.user, rate=Decimal('-1.0'), review="Poor")
+            rate.full_clean()
+
+    def test_instructorRateCreation_WithRateAboveMaximum_RaisesValidationError(self):
+        with self.assertRaises(ValidationError):
+            rate = InstructorRate(user=self.user, rate=Decimal('5.1'), review="Excellent")
+            rate.full_clean()
+
 
  
 

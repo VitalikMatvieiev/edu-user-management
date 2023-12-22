@@ -18,7 +18,7 @@ class UserProfileViewSetTest(APITestCase):
         self.client.force_authenticate(user=self.mock_user)
         self.list_url = reverse('userprofile-list')
 
-    def test_list_user_profiles(self):
+    def test_getUserProfiles_OnValidRequest_Returns200(self):
         response = self.client.get(self.list_url)
         self.assertEqual(response.status_code, 200)
 
@@ -39,7 +39,7 @@ class InstructorRateViewSetTest(APITestCase):
         self.instructor_rate = InstructorRate.objects.create(user=self.user, rate=4.5, review="Excellent")
         self.list_url = reverse('instructorrate-list')
 
-    def test_list_instructor_rates(self):
+    def test_getInstructorRates_OnValidRequest_ReturnsListOfInstructorRates(self):
         response = self.client.get(self.list_url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 1)
