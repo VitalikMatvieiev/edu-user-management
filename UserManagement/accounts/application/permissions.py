@@ -23,6 +23,8 @@ class CanUpdateUserProfile(permissions.BasePermission):
     message = 'Update user profile is not allowed.'
     
     def has_object_permission(self, request, view, obj):
+        if not request.user or not request.user.is_authenticated:
+            return False
         return UpdateUserProfileClaim in request.user.claims
 
     
