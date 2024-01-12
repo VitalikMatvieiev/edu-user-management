@@ -1,17 +1,31 @@
 from rest_framework import permissions
 
+ViewUserProfileClaim = 'ViewUserProfile'
+ViewInstructorRateClaim = 'ViewInstructorRate'
+UpdateUserProfileClaim = 'UpdateUserProfile'
+
 
 class HasViewUserProfileClaim(permissions.BasePermission):
     message = 'Viewing user profiles is not allowed.'
     
     def has_permission(self, request, view):
-        return 'ViewUserProfile' in request.user.claims
-
+        return ViewUserProfileClaim in request.user.claims
+        
 
 class HasViewInstructorRateClaim(permissions.BasePermission):
     message = 'Viewing instructor rates is not allowed.'
     
     def has_permission(self, request, view):
-        return 'ViewInstructorRate' in request.user.claims
+        return ViewInstructorRateClaim in request.user.claims
+
+
+class CanUpdateUserProfile(permissions.BasePermission):
+    message = 'Update user profile is not allowed.'
+    
+    def has_object_permission(self, request, view, obj):
+        if not request.user or not request.user.is_authenticated:
+            return False
+        return UpdateUserProfileClaim in request.user.claims
+
     
     
