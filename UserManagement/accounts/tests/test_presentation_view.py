@@ -18,12 +18,12 @@ class UserProfileViewSetTest(APITestCase):
         
         # Create a mock user with claims
         self.mock_user = MockUserProfile(full_name="Test User", identity_id=self.user_profile.id)
-        self.mock_user.claims = ['UpdateUserProfile']
     
     def test_updateUserProfile_Success_WithProperPermissions(self):
         """
         UpdateUserProfile should succeed when the user has proper permissions.
         """
+        self.mock_user.claims = ['UpdateUserProfile']
         self.client.force_authenticate(user=self.mock_user)
         
         response = self.client.put(self.detail_url, {'full_name': 'Updated Name'})
@@ -35,7 +35,6 @@ class UserProfileViewSetTest(APITestCase):
         """
         UpdateUserProfile should be forbidden when the user lacks proper claims.
         """
-        # Test with a user without proper claims
         self.mock_user.claims = []
         self.client.force_authenticate(user=self.mock_user)
         
@@ -46,7 +45,6 @@ class UserProfileViewSetTest(APITestCase):
         """
         UpdateUserProfile should be forbidden for an anonymous user.
         """
-        # Test with an anonymous user
         self.client.force_authenticate(user=AnonymousUser())
         
         response = self.client.put(self.detail_url, {'full_name': 'Updated Name'})

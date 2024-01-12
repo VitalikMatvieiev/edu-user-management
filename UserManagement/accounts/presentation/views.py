@@ -7,7 +7,6 @@ from django.views.decorators.csrf import csrf_exempt
 
 
 class UserProfileViewSet(viewsets.ModelViewSet):
-    # permission_classes = [HasViewUserProfileClaim]
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
     

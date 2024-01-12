@@ -11,13 +11,13 @@ class UserProfileSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'identity_id': {'read_only': True},
         }
-
+    
     def validate_full_name(self, value):
         # Ensure the full name is not empty
         if not value.strip():
             raise serializers.ValidationError("Full name cannot be empty.")
         return value
-
+    
     def validate_date_of_birth(self, value):
         # Ensure the date of birth is not in the future
         if value and value > date.today():
@@ -25,18 +25,21 @@ class UserProfileSerializer(serializers.ModelSerializer):
         return value
 
     def update(self, instance, validated_data):
-        # Ensure that only the user or an admin can update the profile
         user = self.context['request'].user
+    
+        # Check if the user is authenticated
         if not user.is_authenticated:
             raise serializers.ValidationError("Authentication required to update profile.")
-
-        if UpdateUserProfileClaim in user.claims:
-            for attr, value in validated_data.items():
-                setattr(instance, attr, value)
-            instance.save()
-            return instance
-        else:
+    
+        # Raise error if user does not have the 'UpdateUserProfile' claim
+        if UpdateUserProfileClaim not in user.claims:
             raise serializers.ValidationError("You do not have permission to update this profile.")
+    
+        # Update the instance
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        return instance
 
 
 class InstructorRateSerializer(serializers.ModelSerializer):
@@ -46,4 +49,3 @@ class InstructorRateSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'rate_date_created': {'read_only': True},
         }
-
