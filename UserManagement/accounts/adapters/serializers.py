@@ -49,3 +49,22 @@ class InstructorRateSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'rate_date_created': {'read_only': True},
         }
+
+    def validate_rate(self, value):
+        if value is not None and (value < 0 or value > 5):
+            raise serializers.ValidationError("Rate must be between 0 and 5.")
+        return value
+
+    def validate_review(self, value):
+        if value and len(value) > 1000:
+            raise serializers.ValidationError("Review must be 1000 characters or less.")
+        return value
+
+    def create(self, validated_data):
+        # Custom validation or processing
+        rate = validated_data.get('rate')
+        if rate is None:
+            raise serializers.ValidationError("Rate is required")
+    
+        # Create and return a new instance with the validated data
+        return InstructorRate.objects.create(**validated_data)
