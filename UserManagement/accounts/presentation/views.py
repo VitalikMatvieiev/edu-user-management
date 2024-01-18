@@ -2,7 +2,7 @@ from rest_framework import viewsets, status
 from rest_framework.response import Response
 from ..domain.models import UserProfile, InstructorRate
 from ..adapters.serializers import UserProfileSerializer, InstructorRateSerializer
-from ..application.permissions import HasViewUserProfileClaim, HasViewInstructorRateClaim, CanUpdateUserProfile, CanCreateInstructorRate, CreateInstructorRate
+from ..application.permissions import HasViewUserProfileClaim, HasViewInstructorRateClaim, CanUpdateUserProfile, CanCreateInstructorRate, CreateInstructorRate, CanDeleteInstructorRateAdminOnly, DeleteInstructorRateAdminOnly
 
 
 class UserProfileViewSet(viewsets.ModelViewSet):
@@ -36,6 +36,8 @@ class InstructorRateViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.action == 'create':
             permission_classes = [CanCreateInstructorRate]
+        elif self.action == 'destroy':
+            permission_classes = [CanDeleteInstructorRateAdminOnly]
         else:
             permission_classes = [HasViewInstructorRateClaim]
         return [permission() for permission in permission_classes]
@@ -52,11 +54,20 @@ class InstructorRateViewSet(viewsets.ModelViewSet):
         instructor_id = request.data.get('instructor_id')
         if not instructor_id:
             return Response({'error': 'Instructor ID is required'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        # Automatically set the user_id to the current user's ID
-       #request.data['user_id'] = request.user.identity_id
-        
+            
         return super().create(request, *args, **kwargs)
 
+    def destroy(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return Response({'error': 'Authentication required'}, status=status.HTTP_401_UNAUTHORIZED)
+        
+            # Check if the user has the necessary claim
+        if DeleteInstructorRateAdminOnly not in request.user.claims:
+            return Response({'error': 'You do not have permission'}, status=status.HTTP_403_FORBIDDEN)
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response({'message': 'Instructor rate successfully deleted'}, status=status.HTTP_204_NO_CONTENT)
+    
+    
         
 
