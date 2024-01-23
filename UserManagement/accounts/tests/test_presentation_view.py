@@ -77,8 +77,8 @@ class InstructorRateViewSetTest(APITestCase):
         
         # Create the instructor rate with the saved user and instructor
         self.instructor_rate = InstructorRate.objects.create(
-            user_id=self.user,
-            instructor_id=self.instructor,
+            user=self.user,
+            instructor=self.instructor,
             rate=Decimal('4.5'),
             review="Excellent"
         )
@@ -94,8 +94,8 @@ class InstructorRateViewSetTest(APITestCase):
         self.client.force_authenticate(user=self.mock_user)
     
         data = {
-            'instructor_id': self.instructor.id,
-            'user_id': self.user.id,
+            'instructor': self.instructor.id,
+            'user': self.user.id,
             'rate': 4.5,
             'review': 'Excellent'
         }
@@ -106,7 +106,7 @@ class InstructorRateViewSetTest(APITestCase):
         self.mock_user.claims = []
         self.client.force_authenticate(user=self.mock_user)
         
-        data = {'instructor_id': self.instructor.id, 'rate': 4.5, 'review': 'Excellent'}
+        data = {'instructor': self.instructor.id, 'rate': 4.5, 'review': 'Excellent'}
         response = self.client.post(self.list_url, data)
         self.assertEqual(response.status_code, 403)
     

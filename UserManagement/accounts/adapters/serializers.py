@@ -23,18 +23,18 @@ class UserProfileSerializer(serializers.ModelSerializer):
         if value and value > date.today():
             raise serializers.ValidationError("Date of birth cannot be in the future.")
         return value
-
+    
     def update(self, instance, validated_data):
         user = self.context['request'].user
-    
+        
         # Check if the user is authenticated
         if not user.is_authenticated:
             raise serializers.ValidationError("Authentication required to update profile.")
-    
+        
         # Raise error if user does not have the 'UpdateUserProfile' claim
         if UpdateUserProfileClaim not in user.claims:
             raise serializers.ValidationError("You do not have permission to update this profile.")
-    
+        
         # Update the instance
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
@@ -43,28 +43,28 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
 
 class InstructorRateSerializer(serializers.ModelSerializer):
+    user_id = serializers.IntegerField(source='user.id')
+    instructor_id = serializers.IntegerField(source='instructor.id')
+    
     class Meta:
         model = InstructorRate
-        fields = '__all__'
+        fields = ['id', 'rate', 'review', 'rate_date_created', 'user_id', 'instructor_id']
         extra_kwargs = {
             'rate_date_created': {'read_only': True},
         }
 
-    def validate_rate(self, value):
-        if value is not None and (value < 0 or value > 5):
-            raise serializers.ValidationError("Rate must be between 0 and 5.")
-        return value
-
-    def validate_review(self, value):
-        if value and len(value) > 1000:
-            raise serializers.ValidationError("Review must be 1000 characters or less.")
-        return value
-
     def create(self, validated_data):
-        # Custom validation or processing
-        rate = validated_data.get('rate')
-        if rate is None:
-            raise serializers.ValidationError("Rate is required")
+        # Extract user_id and instructor_id from validated_data
+        user_data = validated_data.pop('user', None)
+        instructor_data = validated_data.pop('instructor', None)
     
-        # Create and return a new instance with the validated data
-        return InstructorRate.objects.create(**validated_data)
+        # Get the UserProfile instances for user and instructor
+        user = UserProfile.objects.get(id=user_data['id']) if user_data and 'id' in user_data else None
+        instructor = UserProfile.objects.get(id=instructor_data['id']) if instructor_data and 'id' in instructor_data else None
+    
+        # Create the InstructorRate instance with the UserProfile instances
+        instructor_rate = InstructorRate.objects.create(user=user, instructor=instructor, **validated_data)
+        return instructor_rate
+
+
+

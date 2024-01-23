@@ -19,14 +19,14 @@ class UserProfile(models.Model):
 
 # InstructorRate Model
 class InstructorRate(models.Model):
-    user_id = models.ForeignKey(
+    user = models.ForeignKey(
         UserProfile,
         null=False,
         on_delete=models.PROTECT,
         related_name='ratings',
         verbose_name='User who is rating'
     )
-    instructor_id = models.ForeignKey(
+    instructor = models.ForeignKey(
         UserProfile,
         null=False,
         on_delete=models.PROTECT,

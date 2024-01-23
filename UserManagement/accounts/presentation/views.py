@@ -13,9 +13,10 @@ class UserProfileViewSet(viewsets.ModelViewSet):
         """
         Instantiates and returns the list of permissions that this view requires.
         """
+        permission_classes = []
         if self.action in ['update', 'partial_update']:
             permission_classes = [CanUpdateUserProfile]
-        else:
+        elif self.action in ['list', 'retrieve']:
             permission_classes = [HasViewUserProfileClaim]
         return [permission() for permission in permission_classes]
 
@@ -34,15 +35,17 @@ class InstructorRateViewSet(viewsets.ModelViewSet):
     serializer_class = InstructorRateSerializer
     
     def get_permissions(self):
+        permission_classes = []
         if self.action == 'create':
             permission_classes = [CanCreateInstructorRate]
         elif self.action == 'destroy':
             permission_classes = [CanDeleteInstructorRateAdminOnly]
-        else:
+        elif self.action in ['list', 'retrieve']:
             permission_classes = [HasViewInstructorRateClaim]
         return [permission() for permission in permission_classes]
     
     def create(self, request, *args, **kwargs):
+
         # Check if the user is authenticated
         if not request.user.is_authenticated:
             return Response({'error': 'Authentication required'}, status=status.HTTP_401_UNAUTHORIZED)

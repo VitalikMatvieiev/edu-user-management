@@ -42,8 +42,8 @@ class InstructorRateTestCase(TestCase):
         self.user = UserProfile.objects.create(full_name="Jane Doe", date_of_birth="1992-02-02")
         self.instructor = UserProfile.objects.create(full_name="John Smith", date_of_birth="1990-01-01")
         self.instructor_rate = InstructorRate.objects.create(
-            user_id=self.user,
-            instructor_id=self.instructor,
+            user=self.user,
+            instructor=self.instructor,
             rate=Decimal('4.5'),
             review="Great instructor"
         )
@@ -61,23 +61,23 @@ class InstructorRateTestCase(TestCase):
 
     def test_instructorRateCreation_WithInvalidDecimalPrecision_RaisesValidationError(self):
         with self.assertRaises(ValidationError):
-            rate = InstructorRate(user_id=self.user, instructor_id=self.instructor, rate=Decimal('4.556'), review="Excellent")
+            rate = InstructorRate(user=self.user, instructor=self.instructor, rate=Decimal('4.556'), review="Excellent")
             rate.full_clean()
 
     def test_instructorRateCreation_WithReviewExceedingLengthLimit_RaisesValidationError(self):
         long_review = 'a' * 1001  # 1001 characters long
-        rate = InstructorRate(user_id=self.user, instructor_id=self.instructor, rate=Decimal('4.5'), review=long_review)
+        rate = InstructorRate(user=self.user, instructor=self.instructor, rate=Decimal('4.5'), review=long_review)
         with self.assertRaises(ValidationError):
             rate.full_clean()
 
     def test_instructorRateCreation_WithRateBelowMinimum_RaisesValidationError(self):
         with self.assertRaises(ValidationError):
-            rate = InstructorRate(user_id=self.user, instructor_id=self.instructor, rate=Decimal('-1.0'), review="Poor")
+            rate = InstructorRate(user=self.user, instructor=self.instructor, rate=Decimal('-1.0'), review="Poor")
             rate.full_clean()
 
     def test_instructorRateCreation_WithRateAboveMaximum_RaisesValidationError(self):
         with self.assertRaises(ValidationError):
-            rate = InstructorRate(user_id=self.user, instructor_id=self.instructor, rate=Decimal('5.1'), review="Excellent")
+            rate = InstructorRate(user=self.user, instructor=self.instructor, rate=Decimal('5.1'), review="Excellent")
             rate.full_clean()
 
 
