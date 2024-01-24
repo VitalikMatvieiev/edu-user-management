@@ -4,7 +4,7 @@ ViewUserProfileClaim = 'ViewUserProfile'
 ViewInstructorRateClaim = 'ViewInstructorRate'
 UpdateUserProfileClaim = 'UpdateUserProfile'
 CreateInstructorRate = 'CreateInstructorRate'
-DeleteInstructorRateAdminOnly = 'DeleteInstructorRateAdminOnly'
+DeleteInstructorRate = 'DeleteInstructorRate'
 
 
 class HasViewUserProfileClaim(permissions.BasePermission):
@@ -39,12 +39,12 @@ class CanCreateInstructorRate(permissions.BasePermission):
         return True
     
 
-class CanDeleteInstructorRateAdminOnly(permissions.BasePermission):
+class CanDeleteInstructorRate(permissions.BasePermission):
     message = 'Delete instructor rate allowed for admin only.'
     
     def has_permission(self, request, view):
         if view.action == 'destroy':
-            return request.user.is_authenticated and DeleteInstructorRateAdminOnly in request.user.claims
+            return request.user.is_authenticated and DeleteInstructorRate in request.user.claims
         return True
     
     

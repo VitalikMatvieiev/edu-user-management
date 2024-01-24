@@ -94,8 +94,8 @@ class InstructorRateViewSetTest(APITestCase):
         self.client.force_authenticate(user=self.mock_user)
     
         data = {
-            'instructor': self.instructor.id,
-            'user': self.user.id,
+            'instructor_id': self.instructor.id,
+            'user_id': self.user.id,
             'rate': 4.5,
             'review': 'Excellent'
         }
@@ -106,12 +106,12 @@ class InstructorRateViewSetTest(APITestCase):
         self.mock_user.claims = []
         self.client.force_authenticate(user=self.mock_user)
         
-        data = {'instructor': self.instructor.id, 'rate': 4.5, 'review': 'Excellent'}
+        data = {'instructor_id': self.instructor.id, 'rate': 4.5, 'review': 'Excellent'}
         response = self.client.post(self.list_url, data)
         self.assertEqual(response.status_code, 403)
     
     def test_deleteInstructorRate_Success_AsAdmin(self):
-        self.mock_user.claims = ['DeleteInstructorRateAdminOnly']
+        self.mock_user.claims = ['DeleteInstructorRate']
         self.client.force_authenticate(user=self.mock_user)
         
         response = self.client.delete(reverse('instructorrate-detail', args=[self.instructor_rate.id]))

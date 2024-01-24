@@ -50,8 +50,8 @@ class InstructorRate(models.Model):
         app_label = 'accounts'
 
     def __str__(self):
-        user_full_name = self.user_id.full_name if self.user_id else "Unknown user"
-        instructor_full_name = self.instructor_id.full_name if self.instructor_id else "Unknown user"
+        user_full_name = self.user.full_name if self.user else "Unknown user"
+        instructor_full_name = self.instructor.full_name if self.instructor else "Unknown user"
 
         return f"{user_full_name}'s rated {instructor_full_name}: {self.rate}"
 
