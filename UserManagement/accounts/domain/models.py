@@ -19,8 +19,21 @@ class UserProfile(models.Model):
 
 # InstructorRate Model
 class InstructorRate(models.Model):
-    user = models.ForeignKey('UserProfile', on_delete=models.PROTECT, related_name='ratings')
-    # rate = models.FloatField()
+    user = models.ForeignKey(
+        UserProfile,
+        null=False,
+        on_delete=models.PROTECT,
+        related_name='ratings',
+        verbose_name='User who is rating'
+    )
+    instructor = models.ForeignKey(
+        UserProfile,
+        null=False,
+        on_delete=models.PROTECT,
+        related_name='instructor_ratings',
+        verbose_name='Instructor being rated'
+    )
+
     rate = models.DecimalField(
         max_digits=3,
         decimal_places=2,
@@ -38,6 +51,8 @@ class InstructorRate(models.Model):
 
     def __str__(self):
         user_full_name = self.user.full_name if self.user else "Unknown user"
-        return f"{user_full_name}'s Rating: {self.rate}"
+        instructor_full_name = self.instructor.full_name if self.instructor else "Unknown user"
+
+        return f"{user_full_name}'s rated {instructor_full_name}: {self.rate}"
 
 
